@@ -28,7 +28,7 @@ Manual installation:
 1. Upload `setup.sh`, `app.py`, and `tailwind.min.css` to `/home/<userprofile>`.
 2. Obtain root privileges, make `setup.sh` executable, and run the setup script:
 
-sudo su
-chmod +x setup.sh
-./setup.sh
+sudo su  
+chmod +x setup.sh  
+./setup.sh  
 
