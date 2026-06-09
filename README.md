@@ -31,3 +31,4 @@ Manual installation:
 sudo su
 chmod +x setup.sh
 ./setup.sh
+
