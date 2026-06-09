@@ -29,8 +29,6 @@ Manual installation:
 2. Obtain root privileges, make `setup.sh` executable, and run the setup script:
 
 sudo su
-
 chmod +x setup.sh
-
 ./setup.sh
 
