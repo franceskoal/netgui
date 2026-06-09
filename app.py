@@ -5,7 +5,7 @@ import time
 from flask import Flask, jsonify, render_template_string, request
 import psutil
 
-# load static files from root dir
+# Flattened configuration: Serve static files directly from the app folder root
 app = Flask(__name__, static_folder=".", static_url_path="")
 
 
@@ -262,7 +262,6 @@ HTML_TEMPLATE = """
 <body class="bg-gray-900 text-gray-100 font-sans p-6">
     <div class="max-w-6xl mx-auto">
         
-        <!-- Header Section with Inline SVG Network Icon -->
         <div class="flex items-center space-x-3 mb-6 border-b border-gray-700 pb-3">
             <svg class="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -271,7 +270,6 @@ HTML_TEMPLATE = """
             <h1 class="text-3xl font-bold text-indigo-400">Network Interface Dashboard</h1>
         </div>
         
-        <!-- Interfaces Monitor Card -->
         <div class="bg-gray-800 rounded-lg shadow-md p-6 mb-8">
             <h2 class="text-xl font-semibold mb-4 text-gray-300">Available Network Cards</h2>
             <div class="overflow-x-auto">
@@ -294,7 +292,6 @@ HTML_TEMPLATE = """
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <!-- Parameter Settings Configuration -->
             <div class="bg-gray-800 rounded-lg p-6 shadow-md">
                 <h2 class="text-xl font-semibold mb-4 text-indigo-300">Modify Interface Parameters</h2>
                 <form id="config-form" class="space-y-4">
@@ -318,9 +315,8 @@ HTML_TEMPLATE = """
                 </form>
             </div>
 
-            <!-- Bridge Management -->
             <div class="bg-gray-800 rounded-lg p-6 shadow-md">
-                <h2 class="text-xl font-semibold mb-4 text-emerald-400">Bridge Management</h2>
+                <h2 class="text-xl font-semibold mb-4 text-yellow-400">Bridge Management</h2>
                 <div class="mb-6">
                     <h3 class="text-sm font-medium text-gray-400 mb-2">Create Bridge</h3>
                     <form id="bridge-form" class="space-y-4">
@@ -329,7 +325,7 @@ HTML_TEMPLATE = """
                             <label class="block text-sm text-gray-400 mb-2">Select Member Interfaces:</label>
                             <div id="bridge-checkbox-container" class="bg-gray-700 p-3 rounded border border-gray-600 max-h-40 overflow-y-auto space-y-2"></div>
                         </div>
-                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium p-2 rounded transition">Create Bridge</button>
+                        <button type="submit" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-medium p-2 rounded transition">Create Bridge</button>
                     </form>
                 </div>
                 <hr class="border-gray-700 my-4">
@@ -345,15 +341,11 @@ HTML_TEMPLATE = """
             </div>
         </div>
 
-        <!-- WAN Traffic Emulation (tc-netem) -->
-        <!-- Changed border-orange-900/40 to border-red-900/40 -->
         <div class="bg-gray-800 rounded-lg p-6 shadow-md border border-red-900/40">
             <div class="flex justify-between items-center mb-2">
                 <div class="flex items-center space-x-2">
-                    <!-- CHANGE: Changed text-orange-400 to text-red-400 -->
                     <h2 class="text-xl font-semibold text-red-400">WAN Network Emulation (tc-netem)</h2>
                 </div>
-                <!-- Changed text-orange-300 to text-red-400 -->
                 <button type="button" onclick="readCurrentNetem()" class="text-xs bg-gray-700 hover:bg-gray-600 text-red-400 px-3 py-1 rounded border border-gray-600 transition">🔄 Read Active Configuration</button>
             </div>
             <p class="text-xs text-gray-400 mb-6">Simulate degraded network links by injecting artificial lag, drops, or corruption on outbound traffic.</p>
@@ -366,14 +358,11 @@ HTML_TEMPLATE = """
                     </div>
                     <div></div>
 
-                    <!-- Sliders -->
                     <div>
                         <div class="flex justify-between text-sm mb-1">
                             <span class="text-gray-300">Latency / Delay</span>
-                            <!-- CHANGE: Changed text-orange-300 to text-red-400 -->
                             <span class="text-red-400 font-mono" id="val-delay">0 ms</span>
                         </div>
-                        <!-- CHANGE: Changed accent-orange-500 to accent-red-500 -->
                         <input type="range" id="netem-delay" min="0" max="1000" value="0" class="w-full accent-red-500 bg-gray-700 h-2 rounded-lg cursor-pointer">
                     </div>
                     <div>
@@ -414,7 +403,6 @@ HTML_TEMPLATE = """
                 </div>
 
                 <div class="flex gap-4 pt-2">
-                    <!-- FIX HERE: Changed bg-orange-600 hover:bg-orange-700 to bg-red-600 hover:bg-red-700 -->
                     <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium p-2.5 rounded transition shadow-md">Apply Simulation Rules</button>
                     <button type="button" id="btn-clear-netem" class="bg-gray-700 hover:bg-gray-600 text-gray-200 font-medium px-6 py-2.5 rounded transition">Reset / Clear Rules</button>
                 </div>
@@ -494,15 +482,12 @@ HTML_TEMPLATE = """
             if(interfaces.length === 0) checkboxContainer.innerHTML = '<span class="text-gray-400 text-xs">No local interfaces detected.</span>';
 
             interfaces.forEach(iface => {
-                // Determine if this interface functions as a software bridge linkage
                 const isBridge = iface.name.startsWith('br') || iface.name.includes('bridge') || iface.name.includes('br-');
 
-                // Generate targeted direct action layout options
                 let actionButtonsHTML = `<button onclick="quickSelect('${iface.name}', '${iface.ip}', '${iface.netmask}', '${iface.mtu}')" class="text-xs text-indigo-400 hover:underline mr-3">Configure</button>`;
                 if (isBridge) {
                     actionButtonsHTML += `<button onclick="triggerInlineBridgeDelete('${iface.name}')" class="text-xs text-red-400 hover:underline font-semibold">Delete Bridge</button>`;
                     
-                    // Add to the dedicated dropdown control selection menu
                     const bridgeOpt = document.createElement('option');
                     bridgeOpt.value = iface.name;
                     bridgeOpt.textContent = iface.name;
@@ -512,7 +497,7 @@ HTML_TEMPLATE = """
                 const row = document.createElement('tr');
                 row.className = "border-b border-gray-800 hover:bg-gray-750";
                 row.innerHTML = `
-                    <td class="p-3 font-mono ${isBridge ? 'text-emerald-400 font-bold' : 'text-yellow-400'}">${iface.name}</td>
+                    <td class="p-3 font-mono ${isBridge ? 'text-green-400 font-bold' : 'text-yellow-400'}">${iface.name}</td>
                     <td class="p-3">
                         <span class="px-2 py-1 text-xs font-semibold rounded ${iface.is_up ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'}">
                             ${iface.is_up ? 'UP' : 'DOWN'}
@@ -527,13 +512,21 @@ HTML_TEMPLATE = """
                 `;
                 tableBody.appendChild(row);
 
-                [selectDropdown, netemDropdown].forEach(dropdown => {
-                    const opt = document.createElement('option');
-                    opt.value = iface.name; opt.textContent = iface.name;
-                    dropdown.appendChild(opt);
-                });
+                // Add to parameters dropdown with stored configuration data attributes
+                const optConfig = document.createElement('option');
+                optConfig.value = iface.name;
+                optConfig.textContent = iface.name;
+                optConfig.dataset.ip = iface.ip !== 'N/A' ? iface.ip : '';
+                optConfig.dataset.netmask = iface.netmask !== 'N/A' ? iface.netmask : '';
+                optConfig.dataset.mtu = iface.mtu;
+                selectDropdown.appendChild(optConfig);
 
-                // EXCLUSION: Only add to the member selection checkboxes if it is NOT a bridge interface containing "br-"
+                // Add to netem dropdown
+                const optNetem = document.createElement('option');
+                optNetem.value = iface.name;
+                optNetem.textContent = iface.name;
+                netemDropdown.appendChild(optNetem);
+
                 if (!iface.name.includes('br-')) {
                     const wrapper = document.createElement('label');
                     wrapper.className = "flex items-center space-x-3 text-sm cursor-pointer hover:bg-gray-600 p-1 rounded";
@@ -545,32 +538,28 @@ HTML_TEMPLATE = """
                 }
             });
 
-            if (oldConfigVal) selectDropdown.value = oldConfigVal;
+            // Restore previous configurations or default populate initial values
+            if (oldConfigVal && selectDropdown.querySelector(`option[value="${oldConfigVal}"]`)) {
+                selectDropdown.value = oldConfigVal;
+            } else if (selectDropdown.options.length > 0) {
+                selectDropdown.selectedIndex = 0;
+                selectDropdown.dispatchEvent(new Event('change'));
+            }
+            
             if (oldDeleteVal && deleteBridgeDropdown.querySelector(`option[value="${oldDeleteVal}"]`)) deleteBridgeDropdown.value = oldDeleteVal;
             if (oldNetemVal) { netemDropdown.value = oldNetemVal; } else { readCurrentNetem(); }
-        // Restore previous parameter selection configurations if they exist
-            if (oldConfigVal) selectDropdown.value = oldConfigVal;
-            if (oldDeleteVal && deleteBridgeDropdown.querySelector(`option[value="${oldDeleteVal}"]`)) {
-                deleteBridgeDropdown.value = oldDeleteVal;
-            }
 
-            // OPTIMIZATION: Check if an active bridge interface exists to default Netem selection
             const activeBridges = interfaces.filter(iface => iface.name.includes('br-'));
-            
             if (activeBridges.length > 0) {
-                // Default to the first available bridge interface found (e.g., br-lan0)
                 netemDropdown.value = activeBridges[0].name;
             } else if (oldNetemVal && netemDropdown.querySelector(`option[value="${oldNetemVal}"]`)) {
-                // Fallback to the previously selected interface if no bridge exists
                 netemDropdown.value = oldNetemVal;
             } else {
-                // Fallback to the first item in the dropdown list
                 if (netemDropdown.options.length > 0) {
                     netemDropdown.selectedIndex = 0;
                 }
             }
 
-            // Instantly pull active tc-netem delay/loss stats for the now-selected interface
             readCurrentNetem();
         }
 
@@ -591,17 +580,27 @@ HTML_TEMPLATE = """
             document.getElementById('config-iface').value = name;
             document.getElementById('netem-iface').value = name;
             document.getElementById('config-ip').value = ip !== 'N/A' ? ip : '';
-            document.getElementById('config-netmask').value = netmask !== 'N/A' ? netmask : '24';
+            document.getElementById('config-netmask').value = netmask !== 'N/A' ? netmask : '';
             document.getElementById('config-mtu').value = mtu;
             readCurrentNetem();
         }
+
+        // Auto-populate form fields whenever the interface dropdown selection shifts
+        document.getElementById('config-iface').addEventListener('change', (e) => {
+            const selectedOption = e.target.options[e.target.selectedIndex];
+            if (selectedOption) {
+                document.getElementById('config-ip').value = selectedOption.dataset.ip || '';
+                document.getElementById('config-netmask').value = selectedOption.dataset.netmask || '';
+                document.getElementById('config-mtu').value = selectedOption.dataset.mtu || '';
+            }
+        });
 
         document.getElementById('config-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const payload = {
                 interface: document.getElementById('config-iface').value,
-                ip: document.getElementById('config-ip').value,
-                netmask: document.getElementById('config-netmask').value,
+                ip: document.getElementById('config-ip').value.trim(),
+                netmask: document.getElementById('config-netmask').value.trim(),
                 mtu: document.getElementById('config-mtu').value
             };
             const res = await fetch('/api/configure', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
@@ -612,30 +611,18 @@ HTML_TEMPLATE = """
 
         document.getElementById('bridge-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
             let bridgeNameInput = document.getElementById('bridge-name').value.trim();
-            
-            // Automatically prepend 'br-' if the user didn't type it
             if (!bridgeNameInput.startsWith('br-')) {
                 bridgeNameInput = 'br-' + bridgeNameInput;
             }
-
             const checkedBoxes = document.querySelectorAll('input[name="bridge_ifaces"]:checked');
             const payload = {
                 bridge_name: bridgeNameInput,
                 interfaces: Array.from(checkedBoxes).map(cb => cb.value)
             };
-            
-            const res = await fetch('/api/bridge/create', { 
-                method: 'POST', 
-                headers: {'Content-Type': 'application/json'}, 
-                body: JSON.stringify(payload) 
-            });
+            const res = await fetch('/api/bridge/create', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
             const data = await res.json();
-            
             alert(data.status === 'success' ? `Bridge "${bridgeNameInput}" created successfully!` : 'Error: ' + data.output);
-            
-            // Clear input and refresh UI fields
             document.getElementById('bridge-name').value = '';
             loadInterfaces();
         });
